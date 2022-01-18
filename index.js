@@ -73,7 +73,48 @@ async function loadDump() {
   });
   await events.once(inputRL, "close");
 
+  console.log("loaded dump");
   return result;
 }
 
-const dump = await loadDump();
+function decycle(dump) {
+  const result = new Map();
+
+  const visiting = new Set();
+  function visit(name) {
+    const data = dump.get(name).split("$");
+    dump.delete(name);
+
+    visiting.add(name);
+
+    const newData = [];
+    for (const line of data) {
+      if (Math.floor(Number(line.split(":", 1)[0])) !== 99) {
+        newData.push(line);
+        continue;
+      }
+      const sLine = line.split(":");
+      const partname = sLine[7] = sLine[7].split("@", 1)[0];
+      if (visiting.has(partname)) {
+        console.log(`decycle: removed: ${name} -> ${partname}`);
+        continue;
+      }
+      if (dump.has(partname)) {
+        visit(partname);
+      }
+      newData.push(sLine.join(":"));
+    }
+    result.set(name, newData.join("$"));
+
+    visiting.delete(name);
+  }
+
+  while (dump.size) {
+    for (const name of dump.keys()) {
+      visit(name);
+    }
+  }
+  return result;
+}
+
+const dump = decycle(await loadDump());
