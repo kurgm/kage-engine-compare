@@ -1,0 +1,16 @@
+{
+  "name": "kage-engine-compare",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@kurgm/kage-engine_orig_node": "file:./orig_node",
+    "@kurgm/kage-engine_head": "file:./head"
+  },
+  "author": "kurgm",
+  "license": "MIT"
+}
