@@ -1,0 +1,8 @@
+[submodule "orig_node"]
+	path = orig_node
+	url = https://github.com/kurgm/kage-engine.git
+	branch = orig_node
+[submodule "head"]
+	path = head
+	url = https://github.com/kurgm/kage-engine.git
+	branch = master
