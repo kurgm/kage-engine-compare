@@ -4,12 +4,15 @@
   "private": true,
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "postinstall": "cd head && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@kurgm/kage-engine_head": "file:./head",
     "@kurgm/kage-engine_orig_node": "file:./orig_node",
-    "@kurgm/kage-engine_head": "file:./head"
+    "tar": "^6.1.11"
   },
   "author": "kurgm",
   "license": "MIT"
