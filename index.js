@@ -172,8 +172,8 @@ function comparePolygons(poly1, poly2) {
       const err = comparePolygon(polygon1, polygon2);
       if (!err) {
         if (j !== i1) {
-          idxMap[i1] = j;
-          idxMap[j] = i1;
+          idxMap[j] = idxMap[i1];
+          idxMap[i1] = i2;
         }
         continue i1;
       }
