@@ -184,6 +184,37 @@ function comparePolygons(poly1, poly2) {
   return null;
 }
 
+const RESULT_PATH = path.join(
+  path.dirname(url.fileURLToPath(import.meta.url)),
+  "result",
+  "data.js",
+);
+const resultStream = fs.createWriteStream(RESULT_PATH);
+const writeResult = (data) => {
+  if (!resultStream.write(data)) {
+    return events.once(resultStream, "drain");
+  }
+  return;
+};
+
+const resultHeader = `;
+var polygondata = [
+`;
+const resultFooter = `];\n`;
+const resultRow = (name, message, poly1, poly2) => `${JSON.stringify({
+  name,
+  message,
+  poly1: polygonsToPath(poly1),
+  poly2: polygonsToPath(poly2),
+})},\n`;
+function polygonsToPath(polygons) {
+  return polygons.array.map((polygon) => `M${polygon.array.map(({ x, y }) => (
+    `${x},${y}`
+  )).join(" ")}Z`).join("");
+}
+
+await writeResult(resultHeader);
+
 let progress = 0;
 const progressStep = Math.floor(dump.size / 20);
 for (const name of dump.keys()) {
@@ -204,5 +235,13 @@ for (const name of dump.keys()) {
   const err = comparePolygons(poly1, poly2);
   if (err) {
     console.log(`${name} : ${err}`);
+    const writePromise = writeResult(resultRow(name, err, poly1, poly2));
+    if (writePromise) {
+      await writePromise;
+    }
   }
 }
+
+await writeResult(resultFooter);
+
+resultStream.end();

@@ -130,3 +130,4 @@ dist
 .pnp.*
 
 dump_newest_only.txt
+result/data.js

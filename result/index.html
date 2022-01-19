@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>KAGE engine compare</title>
+  <script src="index.js"></script>
+</head>
+
+<body>
+  <div id="app">loading...</div>
+  <template id="result_row">
+    <style>
+      svg {
+        width: 600px;
+        height: 200px;
+        vertical-align: middle;
+      }
+      #glyph1_wrap, #glyph2_wrap {
+        fill-opacity: 0.2;
+        stroke-opacity: 0.5;
+      }
+      #glyph1_wrap {
+        stroke: #c0c;
+      }
+      #glyph2_wrap {
+        transform: translateX(400px);
+        stroke: #0c0;
+      }
+      #compare_wrap {
+        transform: translateX(200px);
+      }
+      #glyphcomp1, #glyphcomp2 {
+        fill-opacity: 0.5;
+        mix-blend-mode: multiply;
+      }
+      #glyphcomp1 {
+        fill: #f0f;
+      }
+      #glyphcomp2 {
+        fill: #0f0;
+      }
+      #glyph_name {
+        font-weight: bold;
+      }
+    </style>
+    <div>
+      <svg viewBox="0 0 600 200">
+        <g id="glyph1_wrap"><g id="glyph1"></g></g>
+        <g id="glyph2_wrap"><g id="glyph2"></g></g>
+        <g id="compare_wrap">
+          <use href="#glyph1" id="glyphcomp1"></use>
+          <use href="#glyph2" id="glyphcomp2"></use>
+        </g>
+      </svg>
+      <span id="glyph_name"></span>:
+      <span id="message"></span>
+    </div>
+  </template>
+  <script src="data.js"></script>
+</body>
+
+</html>
