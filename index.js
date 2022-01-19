@@ -118,3 +118,91 @@ function decycle(dump) {
 }
 
 const dump = decycle(await loadDump());
+
+const kage1 = new Kage1();
+const kage2 = new Kage2();
+kage1.kBuhin.search = kage2.kBuhin.search = (name) => {
+  return dump.get(name) || "";
+};
+
+function comparePolygon(poly1, poly2) {
+  const arr1 = poly1.array;
+  const arr2 = poly2.array;
+  if (arr1.length !== arr2.length) {
+    return "different number of points";
+  }
+  for (const i of arr1.keys()) {
+    const pt1 = arr1[i];
+    const pt2 = arr2[i];
+
+    if (pt1.off !== +pt2.off) {
+      return `point ${i} has different off`;
+    }
+    const dx = Math.abs(pt1.x - pt2.x);
+    const dy = Math.abs(pt1.y - pt2.y);
+    if (dx > 0.5 || dy > 0.5) {
+      return `point ${i} is moved too far`;
+    }
+  }
+  return null;
+}
+function comparePolygons(poly1, poly2) {
+  const arr1 = poly1.array;
+  const arr2 = poly2.array;
+  if (arr1.length !== arr2.length) {
+    return "different number of polygons";
+  }
+  inOrder: {
+    for (const i of arr1.keys()) {
+      const polygon1 = arr1[i];
+      const polygon2 = arr2[i];
+      if (comparePolygon(polygon1, polygon2)) {
+        break inOrder;
+      }
+    }
+    return null;
+  }
+  const idxMap = [...arr2.keys()];
+  i1: for (const i1 of arr1.keys()) {
+    let err0;
+    for (let j = i1; j < idxMap.length; j++) {
+      const i2 = idxMap[j];
+      const polygon1 = arr1[i1];
+      const polygon2 = arr2[i2];
+      const err = comparePolygon(polygon1, polygon2);
+      if (!err) {
+        if (j !== i1) {
+          idxMap[i1] = j;
+          idxMap[j] = i1;
+        }
+        continue i1;
+      }
+      err0 ??= `${err} in polygon ${i1}:${j}`;
+    }
+    return err0;
+  }
+  return null;
+}
+
+let progress = 0;
+const progressStep = Math.floor(dump.size / 20);
+for (const name of dump.keys()) {
+  if (++progress % progressStep === 0) {
+    console.log(`${(progress / dump.size * 100).toFixed(1)}%: ${progress} / ${dump.size}`);
+  }
+  const poly1 = new Polygons1();
+  const poly2 = new Polygons2();
+
+  try {
+    kage1.makeGlyph(poly1, name);
+    kage2.makeGlyph(poly2, name);
+  } catch (e) {
+    console.error(`Error: ${name}`, e);
+    continue;
+  }
+
+  const err = comparePolygons(poly1, poly2);
+  if (err) {
+    console.log(`${name} : ${err}`);
+  }
+}
