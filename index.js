@@ -8,9 +8,27 @@ import readline from "readline";
 import url from "url";
 
 import tar from "tar";
+import yargs from "yargs";
 
 import { Kage as Kage1, Polygons as Polygons1 } from "@kurgm/kage-engine_orig_node";
 import { Kage as Kage2, Polygons as Polygons2 } from "@kurgm/kage-engine_head";
+
+const {
+  eps: ERROR_EPS,
+  names: objNames = [],
+} = yargs(process.argv.slice(2))
+  .option("eps", {
+    number: true,
+    default: 0.5,
+    desc: "threshold of differences in coordinates",
+  })
+  .option("names", {
+    array: true,
+    string: true,
+    desc: "name of glyphs to be checked",
+  })
+  .check(({ eps }) => !isNaN(eps) && isFinite(eps) && eps >= 0)
+  .parseSync();
 
 const DUMP_DIRNAME = path.dirname(url.fileURLToPath(import.meta.url));
 const DUMP_NEWEST_ONLY_FILENAME = "dump_newest_only.txt";
@@ -109,9 +127,17 @@ function decycle(dump) {
     visiting.delete(name);
   }
 
-  while (dump.size) {
-    for (const name of dump.keys()) {
-      visit(name);
+  if (objNames.length > 0) {
+    for (const name of objNames) {
+      if (dump.has(name)) {
+        visit(name);
+      }
+    }
+  } else {
+    while (dump.size) {
+      for (const name of dump.keys()) {
+        visit(name);
+      }
     }
   }
   return result;
@@ -140,7 +166,7 @@ function comparePolygon(poly1, poly2) {
     }
     const dx = Math.abs(pt1.x - pt2.x);
     const dy = Math.abs(pt1.y - pt2.y);
-    if (dx > 0.5 || dy > 0.5) {
+    if (dx > ERROR_EPS || dy > ERROR_EPS) {
       return `point ${i} is moved too far`;
     }
   }
@@ -215,11 +241,12 @@ function polygonsToPath(polygons) {
 
 await writeResult(resultHeader);
 
+const objLength = objNames.length || dump.size;
 let progress = 0;
-const progressStep = Math.floor(dump.size / 20);
-for (const name of dump.keys()) {
+const progressStep = Math.floor(objLength / 20) || 1;
+for (const name of objNames.length ? objNames : dump.keys()) {
   if (++progress % progressStep === 0) {
-    console.log(`${(progress / dump.size * 100).toFixed(1)}%: ${progress} / ${dump.size}`);
+    console.log(`${(progress / objLength * 100).toFixed(1)}%: ${progress} / ${objLength}`);
   }
   const poly1 = new Polygons1();
   const poly2 = new Polygons2();
