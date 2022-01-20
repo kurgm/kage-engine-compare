@@ -155,19 +155,19 @@ function comparePolygon(poly1, poly2) {
   const arr1 = poly1.array;
   const arr2 = poly2.array;
   if (arr1.length !== arr2.length) {
-    return "different number of points";
+    return `different number of points (${arr1.length} vs ${arr2.length})`;
   }
   for (const i of arr1.keys()) {
     const pt1 = arr1[i];
     const pt2 = arr2[i];
 
     if (pt1.off !== +pt2.off) {
-      return `point ${i} has different off`;
+      return `point ${i} has different off (${pt1.off} vs ${pt2.off})`;
     }
     const dx = Math.abs(pt1.x - pt2.x);
     const dy = Math.abs(pt1.y - pt2.y);
     if (dx > ERROR_EPS || dy > ERROR_EPS) {
-      return `point ${i} is moved too far`;
+      return `point ${i} is moved too far (dx=${dx.toPrecision(1)}, dy=${dy.toPrecision(1)})`;
     }
   }
   return null;
@@ -176,7 +176,7 @@ function comparePolygons(poly1, poly2) {
   const arr1 = poly1.array;
   const arr2 = poly2.array;
   if (arr1.length !== arr2.length) {
-    return "different number of polygons";
+    return `different number of polygons (${arr1.length} vs ${arr2.length})`;
   }
   inOrder: {
     for (const i of arr1.keys()) {
