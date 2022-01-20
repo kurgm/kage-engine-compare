@@ -79,6 +79,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  rootElem.append(`Result: ${polygondata.length} items`);
+
   for (const { name, message, poly1, poly2 } of polygondata) {
     rootElem.append($E("compare-result", { name, message, poly1, poly2 }));
   }
