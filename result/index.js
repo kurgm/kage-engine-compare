@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const template = document.getElementById("result_row");
 
   function polygonize(polyStr) {
-    const polygons = polyStr.split(/(?<=Z)\s*(?=M)/);
-    return polygons.map((d) => $SVGE("path", { d }));
+    const polygons = polyStr.split(";");
+    return polygons.map((points) => $SVGE("polygon", { points }));
   }
 
   class CompareResultRow extends HTMLElement {

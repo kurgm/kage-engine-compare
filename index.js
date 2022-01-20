@@ -208,9 +208,9 @@ const resultRow = (name, message, poly1, poly2) => `${JSON.stringify({
   poly2: polygonsToPath(poly2),
 })},\n`;
 function polygonsToPath(polygons) {
-  return polygons.array.map((polygon) => `M${polygon.array.map(({ x, y }) => (
+  return polygons.array.map((polygon) => polygon.array.map(({ x, y }) => (
     `${x},${y}`
-  )).join(" ")}Z`).join("");
+  )).join(" ")).join(";");
 }
 
 await writeResult(resultHeader);
