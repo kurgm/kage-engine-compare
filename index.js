@@ -15,12 +15,18 @@ import { Kage as Kage2, Polygons as Polygons2 } from "@kurgm/kage-engine_head";
 
 const {
   eps: ERROR_EPS,
+  gothic,
   names: objNames = [],
 } = yargs(process.argv.slice(2))
   .option("eps", {
     number: true,
     default: 0.5,
     desc: "threshold of differences in coordinates",
+  })
+  .option("gothic", {
+    boolean: true,
+    default: false,
+    desc: "compare gothic outputs",
   })
   .option("names", {
     array: true,
@@ -150,6 +156,10 @@ const kage2 = new Kage2();
 kage1.kBuhin.search = kage2.kBuhin.search = (name) => {
   return dump.get(name) || "";
 };
+if (gothic) {
+  kage1.kShotai = kage1.kGothic;
+  kage2.kShotai = kage2.kGothic;
+}
 
 function comparePolygon(poly1, poly2) {
   const arr1 = poly1.array;
